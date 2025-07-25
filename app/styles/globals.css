@@ -121,6 +121,10 @@
   }
 }
 
+body {
+  background-image: url('../../public/images/Hotelsa.webp');
+}
+
 /* Animación para Cards */
 @keyframes fadeInSlideUp {
   from {
