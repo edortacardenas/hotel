@@ -25,7 +25,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Toaster, toast } from "sonner";
 import React, { useState, useEffect } from "react";
 import { PropertyType, RoomType } from "@prisma/client"; // Importar RoomType
-import { updateHotelAction, getHotelById, isAdmin } from "@/lib/data/hotel-actions"; // Importa la Server Action y la función para obtener datos del hotel
+import { updateHotelAction, getHotelById } from "@/lib/data/hotel-actions"; // Importa la Server Action y la función para obtener datos del hotel
+import {isAdmin } from "@/lib/data/user-actions"
 import { getAllAmenities } from '@/lib/data/amenity-actions';
 //import { useSession } from "@/lib/auth-client"; // Importa useSession para verificar la autenticación
 import { Checkbox } from "@/components/ui/checkbox"; // Importa Checkbox
