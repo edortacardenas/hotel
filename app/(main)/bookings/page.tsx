@@ -5,7 +5,7 @@ import { getUserBookingsAction } from '@/lib/data/booking-actions'; // Server Ac
 import { auth } from '@/lib/auth'; // To get the current session
 import type { Session } from '@/lib/type';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Card, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CalendarDays, BedDouble, Users, MapPin, AlertTriangle } from 'lucide-react';
 import { headers } from 'next/headers';
@@ -116,6 +116,7 @@ async function handlePaymentAction(bookingData: UserBookingDetails) {
       console.error("API did not return a payment URL:", paymentSession);
       return { success: false, message: "Failed to get payment URL from Stripe. Please try again." };
     }
+  // @ts-ignore  
   } catch (error: any) {
     // El redirect() de Next.js funciona lanzando un error especial.
     // Debemos detectar este error y volver a lanzarlo para que Next.js pueda completar la redirección.
@@ -182,7 +183,9 @@ export default async function MyBookingsPage() {
     ? actionResult.bookings 
     : [];
 
+    
   // Transform rawBookings to ensure Decimal fields are converted to numbers
+  // @ts-ignore
   const bookings: UserBookingDetails[] = rawBookings.map((booking: any) => {
     // Ensure booking.room exists and has pricePerNight before attempting to convert
     const roomPricePerNight = booking.room && booking.room.pricePerNight

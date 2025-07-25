@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
         </p>
 
         <p>
-        Bienvenido/a a nuestra Política de Privacidad. Su privacidad es de suma importancia para nosotros. Esta política de privacidad explica cómo recopilamos, usamos, divulgamos y salvaguardamos su información cuando visita nuestro sitio web HotelApp, incluyendo cualquier otra forma de medio, canal de medios, sitio web móvil o aplicación móvil relacionada o conectada al mismo (colectivamente, el "Sitio"). Por favor, lea esta política de privacidad cuidadosamente. Si no está de acuerdo con los términos de esta política de privacidad, por favor no acceda al sitio.
+        Bienvenido/a a nuestra Política de Privacidad. Su privacidad es de suma importancia para nosotros. Esta política de privacidad explica cómo recopilamos, usamos, divulgamos y salvaguardamos su información cuando visita nuestro sitio web HotelApp, incluyendo cualquier otra forma de medio, canal de medios, sitio web móvil o aplicación móvil relacionada o conectada al mismo (colectivamente, el &quot;Sitio&quot;). Por favor, lea esta política de privacidad cuidadosamente. Si no está de acuerdo con los términos de esta política de privacidad, por favor no acceda al sitio.
         </p>
         <h2 className="text-2xl font-semibold mt-8 mb-4">Recopilación de su información</h2>
          
@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
         <ul className="list-disc pl-6 space-y-2">
           <li>
             <strong>Datos Personales:</strong> Información de identificación personal, como su nombre, dirección de envío, dirección de correo electrónico y número de teléfono, e información demográfica, como su edad, sexo, ciudad natal e intereses, que usted nos proporciona voluntariamente cuando se registra en el Sitio o cuando elige participar en diversas actividades relacionadas con el Sitio, como chat en línea y tablones de mensajes.
-            </li>
+          </li>
           <li>
             <strong>Datos Derivados:</strong> Información que nuestros servidores recopilan automáticamente cuando accede al Sitio, como su dirección IP, tipo de navegador, sistema operativo, tiempos de acceso y páginas visitadas, conforme a las políticas de privacidad aplicables.
             </li> 
@@ -77,7 +77,7 @@ export default function PrivacyPolicyPage() {
         <p>
           Si tiene preguntas o comentarios sobre esta Política de Privacidad, puede contactarnos a través de nuestro        
                     
-          <a 
+          <a
           href="/contact" // Asume que tienes una página de contacto
           className="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-semibold"
           >

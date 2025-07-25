@@ -76,8 +76,8 @@ export function UserManagementTable({ users, currentAdminId }: UserManagementTab
       } else {
         toast.error(result.message);
       }
-    } catch (error: any) {
-      toast.error(error.message || 'Error al eliminar el usuario.');
+    } catch (error: unknown) {
+      toast.error((error as Error).message || 'Error al eliminar el usuario.');
     }
     setLoadingStates(prev => ({ ...prev, [userToDelete.id]: false }));
   };

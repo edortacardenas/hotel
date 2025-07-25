@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 //import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import { User as UserIcon, Save, XCircle, Loader2, ShieldCheck } from 'lucide-react';
 
 import { 
@@ -50,7 +50,8 @@ export function EditProfileClientForm({ initialData }: EditProfileClientFormProp
     formData.append('image', values.image ?? '');
 
     // La Server Action redirige en caso de éxito, por lo que solo manejamos el error.
-    const result = await updateUserProfile({} as any, formData);
+    
+    const result = await updateUserProfile({}, formData);
     if (result?.error) {
       toast.error("Error al actualizar el perfil", {
         description: result.error,

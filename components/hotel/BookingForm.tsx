@@ -11,9 +11,7 @@ import { useRouter } from 'next/navigation'; // Importa useRouter para la redire
 import { CreateBookingActionState } from '@/lib/data/booking-actions'; // Importa el tipo de estado de la acción
 
 // Define la forma del estado que la Server Action retornará, extendiendo el tipo de la acción
-interface FormState extends CreateBookingActionState {}
 
-// Define las props que el componente recibirá
 interface BookingFormProps {
   hotelId: string;
   pricePerNightMin: number | null;
@@ -27,7 +25,7 @@ interface BookingFormProps {
   hasConfiguredRooms: boolean;
 }
 
-const initialState: FormState = {
+const initialState: CreateBookingActionState = {
   success: false,
   message: null,
   errors: {},

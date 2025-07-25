@@ -334,7 +334,7 @@ export default function AdminActions({ isAdmin }: AdminActionsProps) {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Confirmar Eliminación</AlertDialogTitle>
                           <AlertDialogDescription>
-                            ¿Estás seguro de que quieres eliminar la amenity de hotel "{amenity.name}"? Esta acción no se puede deshacer.
+                            ¿Estás seguro de que quieres eliminar la amenity de hotel &quot;{amenity.name}&quot;? Esta acción no se puede deshacer.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -448,7 +448,7 @@ export default function AdminActions({ isAdmin }: AdminActionsProps) {
                         <AlertDialogHeader>
                           <AlertDialogTitle>Confirmar Eliminación</AlertDialogTitle>
                           <AlertDialogDescription>
-                            ¿Estás seguro de que quieres eliminar la amenity de habitación "{amenity.name}"? Esta acción no se puede deshacer.
+                            ¿Estás seguro de que quieres eliminar la amenity de habitación &quot;{amenity.name}&quot;? Esta acción no se puede deshacer.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>

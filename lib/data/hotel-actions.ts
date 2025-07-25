@@ -635,7 +635,6 @@ export async function getHotels(filters?: GetHotelsFilters): Promise<HotelSearch
   
     const processedHotels: HotelSearchResult[] = hotelsFromDb.map(dbHotel => {
       const reviewCount = dbHotel.reviews.length;
-      const totalRating = dbHotel.reviews.reduce((acc, review) => acc + review.rating, 0);
       // const avgRating = reviewCount > 0 ? parseFloat((totalRating / reviewCount).toFixed(1)) : 0;
       // avgRating se calcula pero no se incluye en HotelSearchResult ya que no tiene ese campo.
 

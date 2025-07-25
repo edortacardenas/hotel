@@ -376,9 +376,9 @@ export async function modificarBookingAction(
 
     if (priceNeedsRecalculation) {
       const roomPrice = existingBooking.room.pricePerNight;
-      let numericPricePerNight: number;
-      if (typeof roomPrice === 'object' && roomPrice !== null && typeof (roomPrice as any).toNumber === 'function') {
-        numericPricePerNight = (roomPrice as any).toNumber();
+ let numericPricePerNight: number;
+ if (typeof roomPrice === 'object' && roomPrice !== null && typeof (roomPrice as { toNumber: () => number }).toNumber === 'function') {
+        numericPricePerNight = (roomPrice).toNumber();
       } else if (typeof roomPrice === 'number') {
         numericPricePerNight = roomPrice;
       } else {

@@ -1,6 +1,6 @@
-import { Room as PrismaRoom, RoomType as PrismaRoomType, Booking as PrismaBooking, Hotel as PrismaHotel } from '@prisma/client';
+import { Room as PrismaRoom, RoomType as PrismaRoomType} from '@prisma/client';
 import { BedDouble, Users, DollarSign, Image as ImageIcon, CheckCircle, Info, CalendarRange, UserCircle, Hash, Building, Tag, ListChecks, Eye } from 'lucide-react';
-import { getBookingById, BookingWithDetails } from '@/lib/data/booking-actions';
+import { getBookingById } from '@/lib/data/booking-actions';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';

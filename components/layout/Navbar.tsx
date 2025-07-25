@@ -74,9 +74,13 @@ const Navbar: React.FC = () => {
           // Si devuelve un objeto { success: boolean, isAdmin: boolean, message?: string },
           // necesitarías ajustar esto para leer result.isAdmin.
           setIsUserAdmin(adminStatus); 
-        } catch (error: any) { // Captura el error y lo tipa para acceder a .message
+        } catch (error ) { // Captura el error y lo tipa para acceder a .message
           console.error("Error checking admin status:", error);
-          setAdminCheckError(error.message || "Ocurrió un error al verificar el rol de administrador.");
+          setAdminCheckError(
+            error instanceof Error
+              ? error.message
+              : "Ocurrió un error al verificar el rol de administrador."
+          );
           setIsUserAdmin(false); // Asumir no admin en caso de error o fallo
         } finally {
           setAuthStatusChecked(true); // Chequeo completo (login + admin)

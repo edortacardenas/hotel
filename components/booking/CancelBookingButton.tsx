@@ -31,11 +31,13 @@ export default function CancelBookingButton({ bookingId, currentStatus }: Cancel
   const [state, formAction, isPending] = useActionState(deleteBookingAction, initialState);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  //const isCancellable = cancellableStatuses.includes(currentStatus);
+
   const cancellableStatuses: BookingStatus[] = [BookingStatus.CONFIRMED, BookingStatus.PENDING];
   if (!cancellableStatuses.includes(currentStatus)) {
     return null;
   }
-
+  
   useEffect(() => {
     if (state.message && !isPending) { // Mostrar mensaje solo cuando la acción ha terminado
       // Aquí podrías usar una librería de toasts para notificaciones más amigables
@@ -47,7 +49,7 @@ export default function CancelBookingButton({ bookingId, currentStatus }: Cancel
   }, [state, isPending]);
 
   return (
-    <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+   <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="destructive" size="sm" disabled={isPending}>
           <Trash2 className="mr-2 h-4 w-4" />

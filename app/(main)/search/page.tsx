@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import FilterSidebar, { Filters } from '@/components/search/FilterSidebar';
 import HotelCard from '@/components/hotel/HotelCard';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Filter as FilterIcon } from 'lucide-react';
 // Import HotelSearchResult for type definition and getHotelsAndFilterOptions for data fetching
 import { getHotelsAndFilterOptions, HotelSearchResult } from '@/lib/data/hotel-actions';

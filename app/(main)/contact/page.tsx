@@ -68,6 +68,7 @@ export default function ContactPage() {
 
       toast.success("¡Mensaje enviado! Gracias por contactarnos.");
       form.reset(); // Resetea el formulario después del envío
+      // @ts-ignore
     } catch (error: any) { // Usamos 'any' para el tipo de error o puedes usar 'instanceof Error'
       console.error("Error al enviar el formulario:", error); // Log del error completo para depuración
       toast.error(`Hubo un error al enviar tu mensaje: ${error.message || 'Error desconocido'}. Por favor, inténtalo de nuevo más tarde.`);

@@ -119,7 +119,8 @@ export async function updateUserProfile(
   if (image && image.trim() !== "") {
     try {
       new URL(image.trim());
-    } catch (_) {
+    } catch (error) {
+      // Si la URL no es válida, añadimos un error
       fieldErrors.image = ["La URL de la imagen no es válida."];
     }
   }

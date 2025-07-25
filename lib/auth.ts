@@ -26,7 +26,7 @@ export const auth = betterAuth({
             },
         },
         requireEmailVerification: true,
-        sendResetPassword: async ({user, url, token}, request) => {
+        sendResetPassword: async ({user, url}) => {
             await sendMail({
                 to: user.email,
                 subject: "Reset your password",
@@ -38,7 +38,7 @@ export const auth = betterAuth({
         autoSignInAfterVerification: true, //  true to auto sign in after email verification
         sendOnSignUp: true, // true to auto send email verification link after sign up
         expiresIn: 3600, // 1 hour
-        sendVerificationEmail: async ( { user, url, token }, request) => {
+        sendVerificationEmail: async ( { user, url}) => {
             await sendMail({
                 to: user.email,
                 subject: "Verify your email address",
@@ -74,8 +74,7 @@ export const auth = betterAuth({
       changeEmail: {
         enabled: true,
         sendChangeEmailVerification: async (
-          { user, newEmail, url, token },
-          request
+          { newEmail, url }
         ) => {
             await sendMail({
                 to: newEmail, // Send to the new email for verification
@@ -88,7 +87,7 @@ export const auth = betterAuth({
       deleteUser: {
         enabled: true,
         sendDeleteAccountVerification: async (
-          { user, url, token },request  ) => {
+          { user, url} ) => {
             await sendMail({
                 to: user.email,
                 subject: "Verify your identity to delete account",

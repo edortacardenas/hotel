@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Edit3, History, LogOut, Award, ShieldCheck, CalendarDays } from 'lucide-react'; // Added Award, ShieldCheck, CalendarDays
+import { User, Mail, Edit3, History, ShieldCheck, CalendarDays } from 'lucide-react'; // Added Award, ShieldCheck, CalendarDays
 import Link from 'next/link';
 import { UserRole } from '@prisma/client'; // Import UserRole enum from Prisma
 import { auth } from "../../../lib/auth"; // path to your Better Auth server instance

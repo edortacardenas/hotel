@@ -7,7 +7,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
-import { redirect, useParams, useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -244,7 +244,7 @@ export default function EditHotelPage() {
   }, [isAuthorized, hotelId, router, isCheckingAuth]); // router es dependencia de router.push
 
   const form = useForm<HotelFormData>({
-    // @ts-ignore
+    // @ts-expect-error
     resolver: zodResolver(hotelFormSchema),
     defaultValues: initialValues || {
       name: "",
@@ -323,10 +323,10 @@ export default function EditHotelPage() {
               </CardHeader>
               <CardContent>
                 <Form {...form}>
-                  {/*@ts-ignore*/}
+                  {/*@ts-expect-error*/}
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
-                    // @ts-ignore
+                    // @ts-expect-error
                       control={form.control}
                       name="name"
                       render={({ field }) => (
@@ -339,7 +339,7 @@ export default function EditHotelPage() {
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
-                      // @ts-ignore
+                      // @ts-expect-error
                         control={form.control}
                         name="city"
                         render={({ field }) => (
@@ -351,7 +351,7 @@ export default function EditHotelPage() {
                         )}
                       />
                       <FormField
-                      // @ts-ignore
+                      // @ts-expect-error
                         control={form.control}
                         name="country"
                         render={({ field }) => (
@@ -364,7 +364,7 @@ export default function EditHotelPage() {
                       />
                     </div>
                     <FormField
-                    // @ts-ignore
+                    // @ts-expect-error
                       control={form.control}
                       name="description"
                       render={({ field }) => (
@@ -376,7 +376,7 @@ export default function EditHotelPage() {
                       )}
                     />
                     <FormField
-                    // @ts-ignore
+                    // @ts-expect-error
                       control={form.control}
                       name="images" // Corrected from 'images' to match schema
                       render={({ field }) => (
@@ -389,7 +389,7 @@ export default function EditHotelPage() {
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
-                      // @ts-ignore
+                      // @ts-expect-error
                         control={form.control}
                         name="pricePerNightMin" // Nombre corregido
                         render={({ field }) => (
@@ -401,7 +401,7 @@ export default function EditHotelPage() {
                         )}
                       />
                       <FormField
-                      // @ts-ignore
+                      // @ts-expect-error
                       control={form.control}
                       name="address"
                       render={({ field }) => (
@@ -413,7 +413,7 @@ export default function EditHotelPage() {
                       )}
                     />
                     <FormField
-                    // @ts-ignore
+                    // @ts-expect-error
                         control={form.control}
                         name="starRating"
                         render={({ field }) => (
@@ -427,7 +427,7 @@ export default function EditHotelPage() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
-                      // @ts-ignore
+                      // @ts-expect-error
                         control={form.control}
                         name="latitude"
                         render={({ field }) => (
@@ -439,7 +439,7 @@ export default function EditHotelPage() {
                         )}
                       />
                       <FormField
-                      // @ts-ignore
+                      // @ts-expect-error
                         control={form.control}
                         name="longitude"
                         render={({ field }) => (
@@ -452,7 +452,7 @@ export default function EditHotelPage() {
                       />
                     </div>
                     <FormField
-                    // @ts-ignore
+                    // @ts-expect-error
                       control={form.control}
                       name="propertyType"
                       render={({ field }) => (
@@ -484,7 +484,7 @@ export default function EditHotelPage() {
                       />
     
                     <FormField
-                    // @ts-ignore
+                    // @ts-expect-error
                       control={form.control}
                       name="amenities"
                       render={({ field }) => ( // 'field' aquí se refiere al array de amenities seleccionadas
@@ -568,7 +568,7 @@ export default function EditHotelPage() {
                               )}
                             />
                             <FormField
-                            // @ts-ignore
+                            // @ts-expect-error
                               control={form.control}
                               name={`roomInventories.${index}.count`}
                               render={({ field }) => (
@@ -593,7 +593,7 @@ export default function EditHotelPage() {
                         >
                           Añadir Inventario de Habitación
                         </Button>
-                        {/*@ts-ignore*/}
+                        {/*@ts-expect-error*/}
                         <FormField name="roomInventories" control={form.control} render={({ fieldState }) => <FormMessage>{fieldState.error?.message || fieldState.error?.root?.message}</FormMessage>} />
                       </CardContent>
                     </Card>

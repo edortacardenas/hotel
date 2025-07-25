@@ -1,6 +1,6 @@
 // Esta página será un Server Component para obtener datos inicialmente
 import Image from 'next/image';
-import { Star, MapPin, CalendarDays} from 'lucide-react';
+import { Star, MapPin} from 'lucide-react';
 import { getHotelById, HotelFullDetails } from '@/lib/data/hotel-actions'; // Asumimos que HotelWithRoomsAndReviews incluye rooms
 import AmenityIcon from '@/components/hotel/AmenityIcon'; 
 import ReviewCard, { Review } from '../../../../components/hotel/ReviewCard'; // Asegúrate de que ReviewCard sea un Client Component si usa hooks de cliente

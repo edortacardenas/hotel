@@ -2,6 +2,7 @@
  
  import type Stripe from 'stripe';
  import { db } from '@/lib/prisma';
+ import { Prisma } from '@prisma/client';
  import { transporter } from '@/lib/mail';
  import { BookingStatus, PaymentStatus } from '@prisma/client';
  import { stripe } from '@/lib/stripe';
@@ -356,7 +357,14 @@ export async function getBookingByStripeSessionId(sessionId: string): Promise<Bo
 
     // Devolvemos el objeto serializable. El cast a 'any' es para reconciliar la diferencia
     // entre Decimal y number, ya que la estructura del objeto es la misma.
-    return serializableBooking as any;
+    return {
+      ...serializableBooking,
+      totalPrice: new Prisma.Decimal(serializableBooking.totalPrice),
+      room: {
+        ...serializableBooking.room,
+        pricePerNight: new Prisma.Decimal(serializableBooking.room.pricePerNight),
+      },
+    } as BookingWithDetails;
   } catch (error) {
     console.error(`Error fetching booking by session ID ${sessionId}:`, error);
     return null;

@@ -2,7 +2,6 @@ import type { Stripe } from 'stripe';
 import { stripe } from '@/lib/stripe';
 import { NextRequest, NextResponse } from 'next/server';
 import {
-  handleSuccessfulPayment,
   handleFailedPayment,
   handleCheckoutSessionCompleted
 } from '@/lib/data/stripe-actions';

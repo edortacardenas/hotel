@@ -27,7 +27,7 @@ import {
 //   count: number; // Límite total (inventario definido)
 //   existingRooms: number; // Número de habitaciones de este tipo que ya existen
 // }
-import { getHotelById, HotelFullDetails, RoomSubmitData } from '@/lib/data/hotel-actions';
+import { getHotelById, HotelFullDetails} from '@/lib/data/hotel-actions';
 import { ROOM_CONFIG } from '@/constants/room-constants'; // Ajusta la ruta según donde hayas definido ROOM_CONFIG
 
 interface RoomFormData {
@@ -58,7 +58,7 @@ function SubmitButton() {
   );
 }
 
-export default function AddRoomsPage({ params }: { params: { hotelId: string } }) {
+export default function AddRoomsPage() {
   const { hotelId } = useParams<{ hotelId: string }>();
   const [state, formAction] = useActionState(addRoomAction, initialState);
   
@@ -326,7 +326,7 @@ export default function AddRoomsPage({ params }: { params: { hotelId: string } }
           // Preparamos el payload para la server action.
           // `amenities` se une como string para simplificar, y `clientId` (usado solo en frontend) se omite.
           value={JSON.stringify(
-            rooms.map(({ clientId, amenities, ...rest }) => ({
+            rooms.map(({ amenities, ...rest }) => ({
               ...rest,
               amenities: amenities.join(','),
             })))}
