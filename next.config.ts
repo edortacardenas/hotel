@@ -3,10 +3,13 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactStrictMode: true,
-  webpack: (config, { isServer }) => {
+  webpack: (config) => {
     config.module.rules.push({
-      test: /\.svg$/,
-      use: ['@svgr/webpack'],
+      test: /\.(png|jpg|jpeg|gif|webp)$/i,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/images/[hash][ext][query]'
+      }
     });
 
     return config;
