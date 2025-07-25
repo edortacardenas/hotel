@@ -4,6 +4,8 @@ import "./styles/globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import Navbar from '../components/layout/Navbar'; // Ajusta la ruta si es necesario
 import Footer from '../components/layout/Footer'; // Asumiendo que tienes el Footer
+import Image from 'next/image';
+import Hotelsa from '../public/images/Hotelsa.webp'; // Import the image
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,8 +30,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900 bg-[url('../public/images/Hotelsa.webp')] bg-cover bg-center bg-fixed flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-900  flex flex-col min-h-screen`}
       >
+          <Image
+            src={Hotelsa}
+            alt="Hotelsa"
+            className="bg-cover bg-center bg-fixed absolute inset-0 -z-10 h-full w-full object-cover"
+          />
         <Navbar />
         <main className="flex-grow">{children}</main>
         <Footer />
