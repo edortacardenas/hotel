@@ -1,0 +1,321 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum RoomType {
+  STANDARD_SINGLE
+  STANDARD_DOUBLE
+  DELUXE_KING
+  DELUXE_QUEEN
+  SUITE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum PropertyType {
+  HOTEL
+  APARTMENT
+  RESORT
+  VILLA
+  BOUTIQUE_HOTEL
+  GUEST_HOUSE
+  HOSTEL
+  // Añade otros tipos que necesites
+}
+
+
+model Account {
+  id           String     @id @default(cuid())
+  accountId    String
+  providerId   String
+  userId       String
+  user         User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+  expiresAt    DateTime?
+  password     String?
+
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("account")
+  @@index([userId]) // Accounts are often queried by userId
+  @@unique([providerId, accountId])
+}
+
+
+model Session {
+  id        String    @id @default(cuid())
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+
+  @@map("session")
+  @@index([userId]) // Sessions are often queried by userId
+  @@unique([token])
+}
+
+model User {
+  id                String      @id @default(cuid())
+  email             String      @unique
+  name              String
+  password          String?
+  emailVerified     Boolean     @default(false)
+  //stripeCustomerId  String? // For Stripe integration
+  image             String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  role              UserRole    @default(USER)
+  loyaltyPoints     Int         @default(0)
+  accounts Account[]
+  sessions Session[]
+  bookings Booking[]
+  reviews  Review[]
+  @@map("user")
+  @@index([role]) // If you query users by role
+}
+
+model Verification {
+  id         String    @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@map("verification")
+  @@index([identifier]) // Verification tokens are looked up by identifier
+}
+
+model Hotel {
+  id               String  @id @default(cuid())
+  name             String  
+  description      String  @db.Text
+  address          String  @unique
+  city             String
+  country          String
+  latitude         Float?
+  longitude        Float?
+  images           String[] // Array of image URLs
+  starRating       Int     @default(0) // e.g., 1 to 5
+  pricePerNightMin Float?  // Could be derived or manually set for display
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  propertyType     PropertyType?  // Lo hacemos opcional por si algunos hoteles aún no lo tienen definido
+
+  rooms          Room[]
+  reviews        Review[]
+  hotelAmenities HotelAmenity[]
+  bookings       Booking[]
+  roomInventories HotelRoomInventory[] // Relación al inventario de habitaciones por tipo
+
+  @@map("hotel")
+  @@index([name]) // For searching hotels by name
+  @@index([city])
+  @@index([country])
+  @@index([starRating])
+  @@index([propertyType]) // Añadir índice si vas a filtrar frecuentemente por este campo
+}
+
+model HotelRoomInventory {
+  id       String   @id @default(cuid())
+  hotelId  String
+  hotel    Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomType RoomType // El tipo de habitación para este registro de inventario
+  count    Int      //"Número total de habitaciones de este tipo que el hotel gestiona o posee")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([hotelId, roomType], name: "hotel_roomtype_inventory_unique") // Cada hotel solo puede tener una entrada por tipo de habitación
+  @@map("hotel_room_inventory")
+  
+}
+ 
+
+model Amenity {
+  id   String @id @default(cuid())
+  name String @unique // e.g., "WiFi", "Pool", "Gym"
+  icon String? // Icon identifier or URL
+
+  hotelAmenities HotelAmenity[]
+  @@map("amenity")
+}
+
+model HotelAmenity {
+  hotelId   String
+  amenityId String
+
+  hotel   Hotel   @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  amenity Amenity @relation(fields: [amenityId], references: [id], onDelete: Cascade)
+
+  @@id([hotelId, amenityId])
+  @@map("hotelAmenity")
+  @@index([amenityId]) // To find all hotels with a specific amenity
+  // hotelId is already part of the composite PK, but a separate index might be useful if queried alone often.
+}
+
+model Room {
+  id            String   @id @default(cuid())
+  hotelId       String
+  hotel         Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomType      RoomType  @default(STANDARD_SINGLE) // Por esto, usando el nuevo enum
+  description   String?  @db.Text
+  pricePerNight Decimal  @db.Decimal(10, 2) // Ejemplo: 10 dígitos totales, 2 decimales
+  capacity      Int      // Max number of guests
+  beds          Int      // Number of beds
+  images        String[] // Array of image URLs for the room
+  amenities     String[] // List of room-specific amenities (e.g., "Balcony", "Sea View")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  amenityroomrelation AmenityRoomRelation[]
+  bookings Booking[]
+
+  @@map("room")
+  @@index([hotelId])
+  @@index([roomType])
+  @@index([pricePerNight])
+  @@index([capacity])
+}
+
+model AmenityRoom {
+  id   String @id @default(cuid())
+  name String @unique // e.g., "WiFi", "Pool", "Gym"
+  icon String? // Icon identifier or URL
+
+  amenityroomrelation AmenityRoomRelation[]
+  @@map("amenityroom")
+}
+
+model AmenityRoomRelation {
+  roomId   String
+  amenityroomId String
+
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  amenityroom AmenityRoom @relation(fields: [amenityroomId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, amenityroomId])
+  @@map("amenityroomrelation")
+  @@index([amenityroomId]) 
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  userId          String
+  user            User          @relation(fields: [userId], references: [id])
+  hotelId         String 
+  hotel           Hotel         @relation(fields: [hotelId], references: [id])
+  roomId          String
+  room            Room          @relation(fields: [roomId], references: [id])
+  checkInDate     DateTime
+  checkOutDate    DateTime
+  numberOfGuests  Int
+  totalPrice      Decimal       @db.Decimal(10, 2)
+  status          BookingStatus @default(PENDING)
+  specialRequests String?       @db.Text
+  paymentId       String        // Link to Payment model
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  confirmationEmailSent Boolean        @default(false) // <-- AÑADE ESTA LÍNEA
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([hotelId])
+  @@index([roomId])
+  @@index([status])
+  @@index([checkInDate, checkOutDate]) // Índice compuesto para búsquedas de rango de fechas
+  @@map("booking")
+}
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  hotelId   String
+  hotel     Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  rating    Int // 1 to 5
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("review")
+  @@index([userId])
+  @@index([hotelId])
+  @@index([rating])
+}
+
+model Payment {
+  id                    String        @id @default(cuid())
+  amount                Decimal       @db.Decimal(10, 2)
+  currency              String        // e.g., "USD", "EUR"
+  status                PaymentStatus @default(PENDING)
+  stripePaymentIntentId String?       @unique
+  paymentMethod         String?       // e.g., "card", "paypal"
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  bookings Booking[]
+  @@map("payment")
+  @@index([status])
+}
+
+/*
+model Subscription {
+  id                    String        @id @default(cuid())
+  plan	                String
+  referenceId	          String
+  stripeCustomerId	    String?
+  stripeSubscriptionId	String?
+  status	              String
+  periodStart	          DateTime?
+  periodEnd	            DateTime?
+  cancelAtPeriodEnd	    Boolean?	
+  seats	                Int?
+  trialStart	          DateTime?
+  trialEnd	            DateTime?
+
+  @@map("subscription")
+  @@index([id])
+}
+*/
