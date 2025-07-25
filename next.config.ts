@@ -2,18 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  reactStrictMode: true,
-  webpack: (config) => {
-    config.module.rules.push({
-      test: /\.(png|jpg|jpeg|gif|webp)$/i,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/images/[hash][ext][query]'
-      }
-    });
-
-    return config;
-  },
   experimental: {
     serverActions: {
         // Esto permite que las Server Actions funcionen a través de tu túnel de desarrollo.
