@@ -2,6 +2,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  reactStrictMode: true,
+  webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+
+    return config;
+  },
   experimental: {
     serverActions: {
         // Esto permite que las Server Actions funcionen a través de tu túnel de desarrollo.
