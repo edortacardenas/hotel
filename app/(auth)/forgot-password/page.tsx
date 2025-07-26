@@ -17,20 +17,18 @@ import { Input } from "@/components/ui/input"
 import { forgetPasswordFormSchema } from "@/lib/auth-schema"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { Loader2 } from "lucide-react";
 
+interface ForgetPasswordFormProps {
+  setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
+}
 
-  
 const ForgetPasswordForm = ({
 setIsDialogOpen,
-}: {
-setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-}) => {
+}: ForgetPasswordFormProps) => {
 
-  
     const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
-      resolver: zodResolver(forgetPasswordFormSchema),
       defaultValues: {
         email: "",
       },
@@ -41,10 +39,9 @@ setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
     } = form;
   
     async function onSubmit(values: z.infer<typeof forgetPasswordFormSchema>) {
-      const { email} = values
         
       await authClient.forgetPassword({
-        email,
+        email: values.email,
         redirectTo: "/reset-password",
       },{
         onSuccess() {
@@ -86,5 +83,14 @@ setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
       </Form>
     );
   }
-  export default ForgetPasswordForm;
+
+const ForgotPasswordPage = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  return (
+    <ForgetPasswordForm setIsDialogOpen={setIsDialogOpen} />
+  );
+};
+
+export default ForgotPasswordPage;
   
