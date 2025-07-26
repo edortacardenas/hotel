@@ -29,6 +29,7 @@ setIsDialogOpen,
 }: ForgetPasswordFormProps) => {
 
     const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
+      resolver: zodResolver(forgetPasswordFormSchema),
       defaultValues: {
         email: "",
       },
@@ -86,6 +87,7 @@ setIsDialogOpen,
 
 const ForgotPasswordPage = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  console.log(isDialogOpen)
 
   return (
     <ForgetPasswordForm setIsDialogOpen={setIsDialogOpen} />
