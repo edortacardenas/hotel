@@ -22,11 +22,11 @@ import { Loader2 } from "lucide-react";
 
 
   
-export default function ForgetPasswordForm({
+const ForgetPasswordForm = ({
 setIsDialogOpen,
 }: {
 setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
-}) {
+}) => {
 
   
     const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
@@ -86,4 +86,5 @@ setIsDialogOpen: Dispatch<SetStateAction<boolean>>;
       </Form>
     );
   }
+  export default ForgetPasswordForm;
   
