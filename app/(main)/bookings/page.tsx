@@ -16,7 +16,6 @@ import  Decimal  from 'decimal.js';
 import CancelBookingButton from '@/components/booking/CancelBookingButton'; // Update the path to the correct location
 import PaymentButton from '@/components/booking/PaymentButton'; // Asumo que este componente ya existe
 import { redirect } from 'next/navigation'; // Import redirect
-import { Booking } from '@prisma/client';
 import type { UserBookingDetails } from '@/lib/data/booking-actions';
 
 /**

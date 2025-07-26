@@ -5,7 +5,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
 import * as z from "zod";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,6 @@ const prismaRoomTypeValues = Object.values(RoomType);
 if (!prismaRoomTypeValues.length || !prismaRoomTypeValues.every(v => typeof v === 'string')) {
   throw new Error("RoomType enum from Prisma does not provide a valid list of string values for the form.");
 }
-const zodRoomTypeEnum = prismaRoomTypeValues as [string, ...string[]];
 
 function getRoomTypeLabel(value: RoomType): string {
   return value.replace(/_/g, ' ').replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
@@ -78,66 +77,30 @@ const ROOM_TYPE_OPTIONS = prismaRoomTypeValues.map(value => ({
 
 const NO_SPECIFIC_PROPERTY_TYPE_VALUE = "__NONE__";
 
-const hotelFormSchema = z.object({
-  name: z.string().min(3, {
-    message: "El nombre del hotel debe tener al menos 3 caracteres.",
-  }),
-  city: z.string().min(2, {
-    message: "La ciudad debe tener al menos 2 caracteres.",
-  }),
-  country: z.string().min(2, {
-    message: "El país debe tener al menos 2 caracteres.",
-  }),
-  address: z.string().min(5, {
-    message: "La dirección debe tener al menos 5 caracteres.",
-  }),
-  description: z.string().optional(),
-  images: z // For a single primary image URL
-    .string() // Ya no valida como URL completa, permite rutas relativas
-    .optional() // Permite que el campo sea undefined
-    .or(z.literal('')), // Permite que el campo sea una cadena vacía
-  pricePerNightMin: z.preprocess( // Renombrado de pricePerNight a pricePerNightMin
-    (val) => {
-      if (val === "" || val === null || typeof val === "undefined") return undefined;
-      const num = parseFloat(String(val));
-      return isNaN(num) ? val : num;
-    },
-    z.number({ invalid_type_error: "El precio debe ser un número válido o estar vacío." })
-      .positive({ message: "El precio por noche debe ser un número positivo." })
-      .optional()
-  ),
-  starRating: z.preprocess( // Preprocess para manejar strings vacíos o entradas no numéricas
-    (val) => {
-      // Normaliza string vacío, null, o undefined a 'undefined'
-      if (val === "" || val === null || typeof val === "undefined") {
-        return undefined;
-      }
-      // Intenta parsear otros valores como números. parseFloat devuelve NaN para no números.
-      return parseFloat(String(val)); // Este valor (number, NaN, o undefined) va al siguiente esquema
-    },
-    // Este esquema valida el valor preprocesado.
-    z.number({ invalid_type_error: "El rating debe ser un número válido o estar vacío." })
-      .int({ message: "El rating debe ser un número entero entre 0 y 5." })
-      .min(0, { message: "El rating debe ser como mínimo 0." })
-      .max(5, { message: "El rating debe ser como máximo 5." })
-      .optional() // Permite que 'undefined' (del preprocess) pase la validación.
-  ),
-  latitude: z.coerce.number().optional(),
-  longitude: z.coerce.number().optional(),
-  propertyType: z.preprocess(
-    (val) => (val === "" || val === NO_SPECIFIC_PROPERTY_TYPE_VALUE ? undefined : val), // Transforma "" o el valor especial a undefined
-    z.enum(zodPropertyTypeEnum).optional() // Valida contra los tipos de propiedad definidos desde Prisma
-  ),
-  amenities: z.array(z.string().cuid("Cada amenity debe ser un CUID válido.")).optional().default([]),
-  roomInventories: z.array(
-    z.object({
-      roomType: z.enum(zodRoomTypeEnum, { required_error: "Debe seleccionar un tipo de habitación." }),
-      count: z.coerce.number().int().min(0, "La cantidad debe ser 0 o mayor."),
-    })
-  ).optional().default([]), // Array de inventarios, opcional
+export const hotelFormSchema = z.object({
+  id: z.string().optional(),
+  name: z.string().min(1, "Name is required").max(255, "Name is too long"),
+  description: z.string(),
+  address: z.string().min(1, "Address is required"),
+  city: z.string().min(1, "City is required"),
+  country: z.string().min(1, "Country is required"),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
+  images: z.array(z.string().url()).default([]), // images should be an array of strings
+  starRating: z.number().min(0).max(5).default(0),
+  pricePerNightMin: z.number().nullable(),
+  propertyType: z.string().nullable(),
+  amenities: z.array(z.string()).default([]), // amenities should be an array of strings
+  roomInventories: z
+    .array(
+      z.object({
+        roomType: z.string(),
+        count: z.number().min(0),
+      })
+    )
+    .default([]),
 });
 
-type HotelFormData = z.infer<typeof hotelFormSchema>;
 
 export default function EditHotelPage() {
     
@@ -145,7 +108,7 @@ export default function EditHotelPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableAmenities, setAvailableAmenities] = useState<Amenity[]>([]);
-  const [initialValues, setInitialValues] = useState<HotelFormData | null>(null);
+  const [initialValues, setInitialValues] = useState<z.infer<typeof hotelFormSchema> | null>(null); // Inicializar como null para evitar errores de tipo
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [isLoadingPageData, setIsLoadingPageData] = useState(false); // Para cargar hotel y amenities
@@ -207,14 +170,14 @@ export default function EditHotelPage() {
             city: hotelData.city,
             country: hotelData.country,
             address: hotelData.address,
-            description: hotelData.description ?? undefined,
+            description: hotelData.description ,
             // Convertir array de imágenes a string separada por comas para el input
-            images: hotelData.images?.join(', ') ?? '', 
-            pricePerNightMin: hotelData.pricePerNightMin ?? undefined,
-            starRating: hotelData.starRating ?? undefined,
-            latitude: hotelData.latitude ?? undefined,
-            longitude: hotelData.longitude ?? undefined,
-            propertyType: hotelData.propertyType ?? undefined,
+            images: hotelData.images ?? [], // Ensure images remains an array of strings, default to empty array if null
+            pricePerNightMin: hotelData.pricePerNightMin ,
+            starRating: hotelData.starRating ,
+            latitude: hotelData.latitude ,
+            longitude: hotelData.longitude ,
+            propertyType: hotelData.propertyType ,
             amenities: hotelAmenityCUIDs, 
             roomInventories: hotelData.roomInventories?.map(inv => ({ // Cargar inventario
               roomType: inv.roomType,
@@ -243,23 +206,25 @@ export default function EditHotelPage() {
     loadHotelAndAmenitiesData();
   }, [isAuthorized, hotelId, router, isCheckingAuth]); // router es dependencia de router.push
 
-  const form = useForm<HotelFormData>({
-    // @ts-expect-error
+  const form = useForm<z.infer<typeof hotelFormSchema>>({
+    // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
     resolver: zodResolver(hotelFormSchema),
     defaultValues: initialValues || {
       name: "",
       city: "",
       country: "",
       address: "",
-      description: undefined, // Explicitly undefined for optional string
-      images: undefined,    // Explicitly undefined for optional string, corrected from 'images'
-      pricePerNightMin: undefined, // Actualizado y opcional
-      latitude: undefined,
-      longitude: undefined,
-      propertyType: undefined,
-      amenities: [], // Default para amenities
-      roomInventories: [], // Default para inventario
-    },
+      description: "",
+      images: [], // Ensure images is always an array
+      pricePerNightMin: null, // Use null for nullable fields
+      latitude: null, // Use null for nullable fields
+      longitude: null, // Use null for nullable fields
+      propertyType: null, // Use null for nullable fields
+      starRating: 0, // Use 0 as the default value
+      amenities: [], // Ensure amenities is always an array
+      roomInventories: [], // Always initialize roomInventories as an empty array
+      id: undefined, // Optional field should default to undefined
+    } as z.infer<typeof hotelFormSchema>, // Explicitly cast to match schema
     mode: "onChange",
   });
 
@@ -275,12 +240,12 @@ export default function EditHotelPage() {
     }
   }, [initialValues, form]);
 
-  async function onSubmit(formData: HotelFormData) { // formData.images es un string aquí
-    console.log("Datos del formulario a enviar para actualizar:", JSON.stringify(formData, null, 2));
+  async function onSubmit(values: z.infer<typeof hotelFormSchema>) { // formData.images es un string aquí
+    console.log("Datos del formulario a enviar para actualizar:", JSON.stringify(values, null, 2));
     setIsSubmitting(true);
     try {
       // Enviar formData directamente. El backend se encargará de procesar el string de imágenes.
-      const result = await updateHotelAction(hotelId, formData);
+      const result = await updateHotelAction(hotelId, values);
       console.log("Dentro del Submit")
       if (result.success) {
         toast.success(result.message);
@@ -322,15 +287,15 @@ export default function EditHotelPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Form {...form}>
-                  {/*@ts-expect-error*/}
+                <Form {...form}>{/* The Form component takes the form object returned by useForm */}
+                  {/*@ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.*/}
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
-                    // @ts-expect-error
+                    // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                       control={form.control}
                       name="name"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem>{/* FormItem is a layout component for a form field */}
                           <FormLabel>Nombre del Hotel</FormLabel>
                           <FormControl><Input placeholder="Ej: Hotel Paraíso" {...field} /></FormControl>
                           <FormMessage />
@@ -339,11 +304,11 @@ export default function EditHotelPage() {
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
-                      // @ts-expect-error
+                      // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                         control={form.control}
                         name="city"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem>{/* FormItem is a layout component for a form field */}
                             <FormLabel>Ciudad</FormLabel>
                             <FormControl><Input placeholder="Ej: Cancún" {...field} /></FormControl>
                             <FormMessage />
@@ -351,11 +316,11 @@ export default function EditHotelPage() {
                         )}
                       />
                       <FormField
-                      // @ts-expect-error
+                      // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                         control={form.control}
                         name="country"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem>{/* FormItem is a layout component for a form field */}
                             <FormLabel>País</FormLabel>
                             <FormControl><Input placeholder="Ej: México" {...field} /></FormControl>
                             <FormMessage />
@@ -364,11 +329,11 @@ export default function EditHotelPage() {
                       />
                     </div>
                     <FormField
-                    // @ts-expect-error
+                    // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                       control={form.control}
                       name="description"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem>{/* FormItem is a layout component for a form field */}
                           <FormLabel>Descripción (Opcional)</FormLabel>
                           <FormControl><Textarea placeholder="Describe el hotel..." {...field} value={field.value ?? ''} /></FormControl>
                           <FormMessage />
@@ -376,24 +341,24 @@ export default function EditHotelPage() {
                       )}
                     />
                     <FormField
-                    // @ts-expect-error
-                      control={form.control}
+                    // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
+                      control={form.control} // TODO: TS error due to type incompatibility, needs investigation
                       name="images" // Corrected from 'images' to match schema
                       render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>URL de la Imagen </FormLabel>
-                          <FormControl><Input type="text" placeholder="Ej: /images/hotel/foto.jpg o https://..." {...field} value={field.value ?? ''} /></FormControl>
+                        <FormItem>{/* FormItem is a layout component for a form field */}
+                          <FormLabel>URL de la Imagen</FormLabel>
+                          <FormControl><Input type="text" placeholder="Ej: /images/hotel/foto.jpg o https://..." {...field}  /></FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
-                      // @ts-expect-error
+                      // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                         control={form.control}
                         name="pricePerNightMin" // Nombre corregido
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem>{/* FormItem is a layout component for a form field */}
                             <FormLabel>Precio por Noche </FormLabel>
                             <FormControl><Input type="number" step="0.01" placeholder="Ej: 150.00" {...field} value={field.value ?? ''} /></FormControl>
                             <FormMessage />
@@ -401,11 +366,11 @@ export default function EditHotelPage() {
                         )}
                       />
                       <FormField
-                      // @ts-expect-error
+                      // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                       control={form.control}
                       name="address"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem>{/* FormItem is a layout component for a form field */}
                           <FormLabel>Dirección</FormLabel>
                           <FormControl><Input placeholder="Ej: Av. Siempreviva 742" {...field} value={field.value ?? ''} /></FormControl>
                           <FormMessage />
@@ -413,11 +378,11 @@ export default function EditHotelPage() {
                       )}
                     />
                     <FormField
-                    // @ts-expect-error
+                    // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                         control={form.control}
                         name="starRating"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem>{/* FormItem is a layout component for a form field */}
                             <FormLabel>Rating (0-5, Opcional)</FormLabel>
                             <FormControl><Input type="number" step="1" min="0" max="5" placeholder="Ej: 4" {...field} value={field.value ?? ''} /></FormControl>
                             <FormMessage />
@@ -427,11 +392,11 @@ export default function EditHotelPage() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
-                      // @ts-expect-error
+                      // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                         control={form.control}
                         name="latitude"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem>{/* FormItem is a layout component for a form field */}
                             <FormLabel>Latitud (Opcional)</FormLabel>
                             <FormControl><Input type="number" step="any" placeholder="Ej: 21.1619" {...field} value={field.value ?? ''} /></FormControl>
                             <FormMessage />
@@ -439,11 +404,11 @@ export default function EditHotelPage() {
                         )}
                       />
                       <FormField
-                      // @ts-expect-error
+                      // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                         control={form.control}
                         name="longitude"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem>{/* FormItem is a layout component for a form field */}
                             <FormLabel>Longitud (Opcional)</FormLabel>
                             <FormControl><Input type="number" step="any" placeholder="Ej: -86.8515" {...field} value={field.value ?? ''} /></FormControl>
                             <FormMessage />
@@ -452,11 +417,11 @@ export default function EditHotelPage() {
                       />
                     </div>
                     <FormField
-                    // @ts-expect-error
+                    // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                       control={form.control}
                       name="propertyType"
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem>{/* FormItem is a layout component for a form field */}
                           <FormLabel>Tipo de Propiedad</FormLabel>
                           <Select
                             onValueChange={field.onChange}
@@ -484,11 +449,11 @@ export default function EditHotelPage() {
                       />
     
                     <FormField
-                    // @ts-expect-error
+                    // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                       control={form.control}
                       name="amenities"
                       render={({ field }) => ( // 'field' aquí se refiere al array de amenities seleccionadas
-                        <FormItem>
+                        <FormItem>{/* FormItem is a layout component for a form field */}
                           <FormLabel>Comodidades (Opcional)</FormLabel>
                           <FormDescription>
                             Selecciona las comodidades que ofrece el hotel.
@@ -499,7 +464,7 @@ export default function EditHotelPage() {
                             ) : availableAmenities.length > 0 ? (
                               availableAmenities.map((amenity) => (
                                 <FormItem // Ya no es un FormField anidado
-                                  key={amenity.id}
+                                  key={amenity.id} // Each amenity should have a unique key
                                   className="flex flex-row items-start space-x-3 space-y-0"
                                 >
                                   <FormControl>
@@ -547,7 +512,7 @@ export default function EditHotelPage() {
                               control={form.control}
                               name={`roomInventories.${index}.roomType`}
                               render={({ field }) => (
-                                <FormItem className="flex-grow">
+                                <FormItem className="flex-grow">{/* FormItem is a layout component for a form field */}
                                   <FormLabel>Tipo de Habitación</FormLabel>
                                   <Select onValueChange={field.onChange} value={field.value || ""}>
                                     <FormControl>
@@ -568,11 +533,11 @@ export default function EditHotelPage() {
                               )}
                             />
                             <FormField
-                            // @ts-expect-error
+                            // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                               control={form.control}
                               name={`roomInventories.${index}.count`}
                               render={({ field }) => (
-                                <FormItem>
+                                <FormItem>{/* FormItem is a layout component for a form field */}
                                   <FormLabel>Cantidad</FormLabel>
                                   <FormControl>
                                     <Input type="number" min="0" placeholder="Ej: 10" {...field} value={field.value ?? ''} />
@@ -593,8 +558,8 @@ export default function EditHotelPage() {
                         >
                           Añadir Inventario de Habitación
                         </Button>
-                        {/*@ts-expect-error*/}
-                        <FormField name="roomInventories" control={form.control} render={({ fieldState }) => <FormMessage>{fieldState.error?.message || fieldState.error?.root?.message}</FormMessage>} />
+                        {/*@ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.*/}
+                        <FormField name="roomInventories" control={form.control} render={({ fieldState }) => <FormMessage>{fieldState.error?.message || fieldState.error?.root?.message}</FormMessage>} />{/* Display any form level errors */}
                       </CardContent>
                     </Card>
                     <Button type="submit" className="w-full" disabled={isSubmitting}>

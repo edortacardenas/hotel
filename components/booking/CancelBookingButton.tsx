@@ -38,13 +38,14 @@ export default function CancelBookingButton({ bookingId, currentStatus }: Cancel
     return null;
   }
   
+    
   useEffect(() => {
     if (state.message && !isPending) { // Mostrar mensaje solo cuando la acción ha terminado
       // Aquí podrías usar una librería de toasts para notificaciones más amigables
       // console.log("CancelBookingAction State:", state);
       if (state.success) {
         setIsDialogOpen(false); // Cerrar diálogo en éxito
-      }
+    }
     }
   }, [state, isPending]);
 
