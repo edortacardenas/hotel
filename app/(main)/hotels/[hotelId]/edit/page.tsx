@@ -5,7 +5,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useFieldArray, SubmitHandler } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -54,7 +54,6 @@ const prismaPropertyTypeValues = Object.values(PropertyType);
 if (!prismaPropertyTypeValues.length || !prismaPropertyTypeValues.every(v => typeof v === 'string')) {
   throw new Error("PropertyType enum from Prisma does not provide a valid list of string values for the form.");
 }
-const zodPropertyTypeEnum = prismaPropertyTypeValues as [string, ...string[]];
 
 const PROPERTY_TYPE_OPTIONS = prismaPropertyTypeValues.map(value => ({
   value: value as PropertyType,
@@ -508,7 +507,7 @@ export default function EditHotelPage() {
                         {roomInventoryFields.map((item, index) => (
                           <div key={item.id} className="flex items-end space-x-2 border p-3 rounded-md">
                             <FormField
-                            // @ts-ignore
+                            // @ts-expect-error: El tipo de `control` no coincide exactamente con lo esperado, pero es funcional en este contexto.
                               control={form.control}
                               name={`roomInventories.${index}.roomType`}
                               render={({ field }) => (

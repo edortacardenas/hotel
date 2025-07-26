@@ -34,20 +34,21 @@ export default function CancelBookingButton({ bookingId, currentStatus }: Cancel
   //const isCancellable = cancellableStatuses.includes(currentStatus);
 
   const cancellableStatuses: BookingStatus[] = [BookingStatus.CONFIRMED, BookingStatus.PENDING];
-  if (!cancellableStatuses.includes(currentStatus)) {
-    return null;
-  }
-  
-    
+  const isCancellable = cancellableStatuses.includes(currentStatus);
+
+  // Mover la lógica condicional dentro del useEffect
   useEffect(() => {
-    if (state.message && !isPending) { // Mostrar mensaje solo cuando la acción ha terminado
-      // Aquí podrías usar una librería de toasts para notificaciones más amigables
-      // console.log("CancelBookingAction State:", state);
+    if (state.message && !isPending) {
       if (state.success) {
         setIsDialogOpen(false); // Cerrar diálogo en éxito
-    }
+      }
     }
   }, [state, isPending]);
+
+  // Si no es cancelable, retornar null después de los hooks
+  if (!isCancellable) {
+    return null;
+  }
 
   return (
    <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
