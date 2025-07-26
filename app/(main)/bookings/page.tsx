@@ -11,21 +11,13 @@ import { CalendarDays, BedDouble, Users, MapPin, AlertTriangle } from 'lucide-re
 import { headers } from 'next/headers';
 
 // Import the type for user bookings, ensure it expects numbers for prices
-import { UserBookingDetails } from '@/lib/data/booking-actions'; 
 // Import Decimal for type checking during transformation
-import { Decimal } from '@prisma/client/runtime/library'; 
+import  Decimal  from 'decimal.js'; 
 import CancelBookingButton from '@/components/booking/CancelBookingButton'; // Update the path to the correct location
 import PaymentButton from '@/components/booking/PaymentButton'; // Asumo que este componente ya existe
 import { redirect } from 'next/navigation'; // Import redirect
-
-/**
- * Define el tipo de retorno para la Server Action.
- * Esto permite al cliente manejar los errores de forma explícita.
- */
-type PaymentActionResult = {
-  success: boolean;
-  message?: string;
-};
+import { Booking } from '@prisma/client';
+import type { UserBookingDetails } from '@/lib/data/booking-actions';
 
 /**
  * Server Action para iniciar el proceso de pago.
@@ -116,11 +108,10 @@ async function handlePaymentAction(bookingData: UserBookingDetails) {
       console.error("API did not return a payment URL:", paymentSession);
       return { success: false, message: "Failed to get payment URL from Stripe. Please try again." };
     }
-  // @ts-ignore  
-  } catch (error: any) {
+  } catch (error: unknown) {
     // El redirect() de Next.js funciona lanzando un error especial.
     // Debemos detectar este error y volver a lanzarlo para que Next.js pueda completar la redirección.
-    if (error.digest?.startsWith('NEXT_REDIRECT')) {
+    if (typeof error === 'object' && error !== null && 'digest' in error && typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
       throw error;
     }
     console.error("Error in handlePaymentAction:", error); // Loguear solo errores reales
@@ -128,7 +119,6 @@ async function handlePaymentAction(bookingData: UserBookingDetails) {
     return { success: false, message: "An unexpected error occurred during payment initiation. Please try again." };
   }
 }
-
 
 function formatDate(date: Date): string {
   return new Date(date).toLocaleDateString('es-ES', {
@@ -181,26 +171,27 @@ export default async function MyBookingsPage() {
   // Assuming actionResult.bookings contains an array of objects that might have Decimal types
   const rawBookings = 'bookings' in actionResult && Array.isArray(actionResult.bookings) 
     ? actionResult.bookings 
-    : [];
+    : []
+
 
     
   // Transform rawBookings to ensure Decimal fields are converted to numbers
-  // @ts-ignore
-  const bookings: UserBookingDetails[] = rawBookings.map((booking: any) => {
+  
+const bookings: UserBookingDetails[] = rawBookings.map((booking ) => {
     // Ensure booking.room exists and has pricePerNight before attempting to convert
     const roomPricePerNight = booking.room && booking.room.pricePerNight
-      ? (booking.room.pricePerNight instanceof Decimal ? booking.room.pricePerNight.toNumber() : Number(booking.room.pricePerNight))
-      : 0; // Default to 0 or handle as an error if price is mandatory
-
+      ? (booking.room.pricePerNight instanceof Decimal ? booking.room.pricePerNight : new Decimal(booking.room.pricePerNight))
+      : new Decimal(0); // Default to Decimal(0) or handle as an error if price is mandatory
+    
     return {
       ...booking,
-      totalPrice: booking.totalPrice instanceof Decimal ? booking.totalPrice.toNumber() : Number(booking.totalPrice),
+      totalPrice: booking.totalPrice instanceof Decimal ? booking.totalPrice : new Decimal(booking.totalPrice),
       room: {
         ...booking.room,
         pricePerNight: roomPricePerNight,
       },
-    } as UserBookingDetails; // Assert the final structure matches UserBookingDetails
-  });
+    } as UserBookingDetails;
+  }); 
 
   return (
     <div className="w-full min-h-screen bg-transparent">
