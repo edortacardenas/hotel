@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input"
 import { forgetPasswordFormSchema } from "@/lib/auth-schema"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { Loader2 } from "lucide-react";
 
 interface ForgetPasswordFormProps {
