@@ -32,6 +32,7 @@ import { GithubButton } from "./oauth-button"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
 import  ForgotPasswordForm  from "../forgot-password/page"
+import ForgotPasswordPage from "../forgot-password/page"
 
 const SignIn = () => {
   const route = useRouter();
@@ -164,7 +165,7 @@ const SignIn = () => {
                 <DialogTitle>Reset your password</DialogTitle>
           </DialogHeader>
           <div>
-                <ForgotPasswordForm setIsDialogOpen={setIsDialogOpen} />
+                <ForgotPasswordPage/>
           </div>
         </DialogContent>
       </Dialog>
