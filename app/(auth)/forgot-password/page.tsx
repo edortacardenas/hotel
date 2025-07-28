@@ -5,7 +5,7 @@ import React, { useState } from "react";
 
 export default function ForgotPasswordPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  console.log(isDialogOpen)
   return (
     <div>
       <h2>Forgot Password</h2>

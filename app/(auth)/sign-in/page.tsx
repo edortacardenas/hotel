@@ -31,7 +31,6 @@ import { Loader2 } from "lucide-react"
 import { GithubButton } from "./oauth-button"
 import { useState } from "react"
 import { useRouter } from "next/navigation";
-import  ForgotPasswordForm  from "../forgot-password/page"
 import ForgotPasswordPage from "../forgot-password/page"
 
 const SignIn = () => {
