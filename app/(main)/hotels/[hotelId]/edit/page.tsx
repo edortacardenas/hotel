@@ -76,7 +76,7 @@ const ROOM_TYPE_OPTIONS = prismaRoomTypeValues.map(value => ({
 
 const NO_SPECIFIC_PROPERTY_TYPE_VALUE = "__NONE__";
 
-export const hotelFormSchema = z.object({
+const hotelFormSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(1, "Name is required").max(255, "Name is too long"),
   description: z.string(),
