@@ -20,10 +20,9 @@ import { toast } from "sonner"
 import { Dispatch, SetStateAction } from "react";
 import { Loader2 } from "lucide-react";
 
+interface ForgetPasswordFormProps { setIsDialogOpen: Dispatch<SetStateAction<boolean>> } 
 
-const ForgetPasswordForm = ({
-setIsDialogOpen,
-}: {setIsDialogOpen: Dispatch<SetStateAction<boolean>>}) => {
+const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({ setIsDialogOpen }) => {
 
     const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
       resolver: zodResolver(forgetPasswordFormSchema),
@@ -83,5 +82,5 @@ setIsDialogOpen,
   }
 
 
-export default ForgetPasswordForm;
+export default ForgetPasswordForm
   
