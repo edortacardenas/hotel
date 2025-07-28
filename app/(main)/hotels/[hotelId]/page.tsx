@@ -17,12 +17,6 @@ import BookingForm from '@/components/hotel/BookingForm'; // Importar el nuevo f
 import { RoomType } from '@prisma/client'; // Importar RoomType
 
 
-interface HotelDetailsPageProps {
-  params: {
-    hotelId: string;
-  };
-}
-
 interface DisplayableRoomType {
   id: string; // ID de una habitación representativa de este tipo
   type: RoomType; // El tipo de habitación (enum)
@@ -32,7 +26,7 @@ interface DisplayableRoomType {
   totalConfiguredCount?: number; // Opcional: para mostrar el total de habitaciones de este tipo
 }
 
-export default async function HotelDetailsPage({ params }: HotelDetailsPageProps) {
+export default async function HotelDetailsPage({ params }: {params: Promise<{ hotelId: string }>}) {
   const { hotelId } = await params; 
 
   // Obtener la sesión del usuario actual en el Server Component
