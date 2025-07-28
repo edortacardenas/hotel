@@ -17,12 +17,12 @@ import { Input } from "@/components/ui/input"
 import { forgetPasswordFormSchema } from "@/lib/auth-schema"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
-import { Dispatch, SetStateAction } from "react";
+//import { Dispatch, SetStateAction } from "react";
 import { Loader2 } from "lucide-react";
 
-interface ForgetPasswordFormProps { setIsDialogOpen: Dispatch<SetStateAction<boolean>> } 
 
-const ForgetPasswordForm: React.FC<ForgetPasswordFormProps> = ({ setIsDialogOpen }) => {
+
+const ForgetPasswordForm =({ setIsDialogOpen }: { setIsDialogOpen: (isOpen: boolean) => void }) => {
 
     const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
       resolver: zodResolver(forgetPasswordFormSchema),

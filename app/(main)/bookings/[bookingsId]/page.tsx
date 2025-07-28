@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-
+import Image from 'next/image';
 
 /**
  * Define una interfaz para las props del componente.
@@ -86,7 +86,7 @@ const RoomDetailsDisplayComponent: React.FC<RoomDetailsDisplayProps> = ({ room }
           <div className={`grid grid-cols-1 ${processedImages.length > 1 ? 'sm:grid-cols-2' : ''} ${processedImages.length > 2 ? 'md:grid-cols-3' : ''} gap-0`}>
             {processedImages.map((image, index) => (
               <div key={`${image}-${index}`} className="aspect-video overflow-hidden group">
-                <img 
+                <Image 
                   src={image} 
                   alt={`${formatRoomType(roomType)} - Imagen ${index + 1}`} 
                   className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300" 
