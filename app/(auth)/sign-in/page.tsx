@@ -164,7 +164,7 @@ const SignIn = () => {
                 <DialogTitle>Reset your password</DialogTitle>
           </DialogHeader>
           <div>
-                <ForgetPasswordForm setIsDialogOpen={setIsDialogOpen} />
+                <ForgetPasswordForm isOpen={setIsDialogOpen} />
           </div>
         </DialogContent>
       </Dialog>

@@ -22,7 +22,7 @@ import { Loader2 } from "lucide-react";
 
 
 
-const ForgetPasswordForm =({ setIsDialogOpen }: { setIsDialogOpen: (isOpen: boolean) => void }) => {
+const ForgetPasswordForm =({ isOpen }: { isOpen: (value: boolean) => void }) => {
 
     const form = useForm<z.infer<typeof forgetPasswordFormSchema>>({
       resolver: zodResolver(forgetPasswordFormSchema),
@@ -43,7 +43,7 @@ const ForgetPasswordForm =({ setIsDialogOpen }: { setIsDialogOpen: (isOpen: bool
       },{
         onSuccess() {
           toast.success("Please verify your email to reset password.");
-          setIsDialogOpen(false);
+          isOpen(false);
         },
         onError(ctx) {
           const errorMessage = ctx.error.message || "Ocurrió un error inesperado.";
