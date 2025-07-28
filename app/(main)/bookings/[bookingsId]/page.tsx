@@ -6,10 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-interface BookingDetailsPageProps {
-  params: { bookingsId: string } | Promise<{ bookingsId: string }>;
-}
-
 
 /**
  * Define una interfaz para las props del componente.
@@ -162,8 +158,8 @@ const RoomDetailsDisplayComponent: React.FC<RoomDetailsDisplayProps> = ({ room }
 };
 
 // Esta es la página principal que se exporta.
-export default async function BookingDetailsPage({ params }: BookingDetailsPageProps) {
-  const { bookingsId } = await params; // No es necesario 'await' para params
+export default async function BookingDetailsPage({ params }: {params: Promise<{ bookingsId: string }>}) {
+  const { bookingsId } = await params; // Es necesario 'await' para params
 
   if (!bookingsId) {
     return (
