@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 interface BookingDetailsPageProps {
-  params: { bookingsId: string };
+  params: { bookingsId: string } | Promise<{ bookingsId: string }>;
 }
 
 
