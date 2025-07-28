@@ -29,7 +29,7 @@ import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 
 import { GithubButton } from "./oauth-button"
-import { useState } from "react"
+import { useState, Dispatch, SetStateAction } from "react"
 import { useRouter } from "next/navigation";
 import  ForgetPasswordForm  from "../forgot-password/page"
 
@@ -161,10 +161,10 @@ const SignIn = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent aria-describedby="Dialogo" className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Reset your password</DialogTitle>
+                <DialogTitle>Reset your password</DialogTitle>
           </DialogHeader>
           <div>
-            <ForgetPasswordForm setIsDialogOpen={setIsDialogOpen} />
+                <ForgetPasswordForm setIsDialogOpen={setIsDialogOpen} />
           </div>
         </DialogContent>
       </Dialog>
