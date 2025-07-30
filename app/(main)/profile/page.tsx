@@ -13,6 +13,7 @@ import { UserRole } from '@prisma/client'; // Import UserRole enum from Prisma
 import { auth } from "../../../lib/auth"; // path to your Better Auth server instance
 import { SignOutButton } from "./SignOutButton"; // Importa el nuevo componente
 import { headers } from 'next/headers';
+import { getSession } from '@/lib/data/user-actions';
 
 // Defines the shape of the user profile data we expect to display
 interface UserProfileData {
@@ -74,8 +75,7 @@ async function getUserProfileData(
 }
 
 export default async function ProfilePage() {
-  const rawSession = await auth.api.getSession({ headers: await headers() });
-  const session = rawSession as Session;
+  const session = await getSession() as Session
    
   if (!session?.user?.id) {
     redirect(`/sign-in`);
