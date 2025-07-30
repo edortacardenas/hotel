@@ -58,7 +58,7 @@ const SignUp = () => {
         //router.push("/sign-in");
       },
       onError(ctx) {
-        if (ctx.error.message.includes("User already exists")) {
+        if (ctx.error?.message?.includes("User already exists")) {
           // ¡Aquí está la mejora!
           toast.error("El usuario ya existe. Por favor, inicia sesión o utiliza otro correo electrónico para registrarte.");
         }else {
