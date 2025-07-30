@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db-push": "prisma db push",
+    "db-pull": "prisma db pull",
+    "migrate": "prisma migrate dev",
+    "migrate-reset": "prisma migrate reset",
+    "migrate-deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
