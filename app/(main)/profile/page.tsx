@@ -10,9 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { User, Mail, Edit3, History, ShieldCheck, CalendarDays } from 'lucide-react'; // Added Award, ShieldCheck, CalendarDays
 import Link from 'next/link';
 import { UserRole } from '@prisma/client'; // Import UserRole enum from Prisma
-import { auth } from "../../../lib/auth"; // path to your Better Auth server instance
 import { SignOutButton } from "./SignOutButton"; // Importa el nuevo componente
-import { headers } from 'next/headers';
 import { getSession } from '@/lib/data/user-actions';
 
 // Defines the shape of the user profile data we expect to display
