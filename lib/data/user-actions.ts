@@ -21,7 +21,7 @@ export async function getSession(): Promise<Session | null> {
     return session
   } catch (error) {
     console.error("Error getting session:", error);
-    return null;
+    throw error
   }
 }
 
