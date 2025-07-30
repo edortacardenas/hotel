@@ -5,7 +5,7 @@ import type { NextRequest } from 'next/server';
 // Asegúrate de que este valor coincida EXACTAMENTE con la cookie que establece tu librería de autenticación.
 // Por ejemplo, para Lucia Auth, el nombre por defecto es 'auth_session'.
 const isAuthenticated = (request: NextRequest): boolean => {
-  const sessionCookie = request.cookies.get('better-auth.session_token'); //
+  const sessionCookie = request.cookies.get('__Secure-better-auth.session_token'); //
   return !!sessionCookie;
 }
 
