@@ -1,15 +1,16 @@
 
 import { getHotels} from "@/lib/data/hotel-actions"; // 
-import {isAdmin } from "@/lib/data/user-actions"; // Importar isAdmin
+import { getSession } from "@/lib/data/user-actions"; // Importar getSession
 import HotelCard from '@/components/hotel/HotelCard'; // Usaremos HotelCardAlternative para mejor UX
 import AdminActions from "@/components/hotel/AdminActions"; // Importar el nuevo componente
 
 export default async function HotelsPage() {
   // Cargar hoteles y estado de admin en paralelo para mejorar rendimiento
   const [hotelsResult, adminStatusResult] = await Promise.allSettled([
-    getHotels(),
-    isAdmin() // Esta función debe existir en hotel-actions y retornar un booleano o algo evaluable
+    getHotels(),    
+    getSession()
   ]);
+
 
   const hotels = hotelsResult.status === 'fulfilled' ? hotelsResult.value : [];
   const currentIsAdmin = adminStatusResult.status === 'fulfilled' ? !!adminStatusResult.value : false;
@@ -20,6 +21,10 @@ export default async function HotelsPage() {
   }
   if (adminStatusResult.status === 'rejected') {
     console.error("Error al verificar el estado de administrador:", adminStatusResult.reason);
+    // You might want to inspect the reason for failure. It could be due to network issues, database errors, etc.
+    // Consider a more informative error message based on the specific error.
+    // Example:
+    // console.error("Failed to fetch session:", adminStatusResult.reason);
     // currentIsAdmin será false, lo cual es un comportamiento seguro (no mostrar botones de admin)
   }
 

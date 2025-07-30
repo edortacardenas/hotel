@@ -1,9 +1,8 @@
 
-//import { auth } from '@/lib/auth';
+
 import type { Session } from '@/lib/type'; // Asumiendo que Session se exporta desde lib/type.ts
 import { redirect } from 'next/navigation';
 
-//import { headers } from 'next/headers';
 import { EditProfileClientForm } from './edit-form';
 import { getSession, getUserDataForEdit } from '@/lib/data/user-actions'; // Asegúrate de que la ruta sea correcta	
 
