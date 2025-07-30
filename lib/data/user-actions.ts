@@ -11,7 +11,7 @@ import { cookies } from 'next/headers';
 
 export async function getSession(): Promise<Session | null> {
   try {
-    const sessionToken = (await cookies()).get('better-auth.session_token')?.value;
+    const sessionToken = (await cookies()).get('__Secure-better-auth.session_token')?.value;
 
     if (!sessionToken) {
       return null;
