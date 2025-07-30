@@ -73,19 +73,26 @@ async function getUserProfileData(
 }
 
 export default async function ProfilePage() {
-  const session = await getSession() as Session
-   
-  if (!session?.user?.id) {
+  let userProfile: UserProfileData | null = null;
+  try {
+    // Verifica si el usuario está autenticado
+    const session = await getSession() as Session;
+
+    if (!session?.user?.id) {
+      redirect(`/sign-in`);
+    }
+    userProfile = await getUserProfileData(session.user);
+
+    if (!userProfile) {
+      // Esto podría ocurrir si getUserProfileData devuelve null (p.ej. error de BD futuro).
+      return <div className="container mx-auto px-4 py-8 text-center text-gray-100">Error al cargar el perfil. Por favor, inténtalo de nuevo más tarde.</div>;
+    }
+  } catch (error) {
+    console.error("Error al obtener la sesión del usuario:", error);
     redirect(`/sign-in`);
   }
 
-  // session.user está garantizado aquí debido a la comprobación anterior.
-  const userProfile = await getUserProfileData(session.user);
-
-  if (!userProfile) {
-    // Esto podría ocurrir si getUserProfileData devuelve null (p.ej. error de BD futuro).
-    return <div className="container mx-auto px-4 py-8 text-center text-gray-100">Error al cargar el perfil. Por favor, inténtalo de nuevo más tarde.</div>;
-  }
+  
 
   return (
     <div className="container m-auto px-4 py-14">
