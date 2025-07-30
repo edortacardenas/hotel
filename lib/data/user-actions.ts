@@ -114,8 +114,7 @@ export async function updateUserProfile(
   prevState: EditProfileFormState,
   formData: FormData
 ): Promise<EditProfileFormState> {
-  const rawSession = await auth.api.getSession({ headers: await headers() });
-  const session = rawSession as Session;
+  const session = await getSession() as Session;
 
   if (!session?.user?.id) {
     return { error: "Usuario no autenticado. Por favor, inicia sesión de nuevo.", success: false };
