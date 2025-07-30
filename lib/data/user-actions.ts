@@ -11,16 +11,14 @@ import { cookies } from 'next/headers';
 
 export async function getSession(): Promise<Session | null> {
   try {
-    const sessionToken = (await cookies()).get('__Secure-better-auth.session_token')?.value;
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    }) as Session;
 
-    if (!sessionToken) {
+    if (!session.user?.id) {
       return null;
     }
-
-    const rawSession = await auth.api.getSession({
-      headers: await headers(),
-    }) as Session; // Obtener y castear la sesión directamente);
-    return rawSession as Session;
+    return session
   } catch (error) {
     console.error("Error getting session from cookie:", error);
     return null;
