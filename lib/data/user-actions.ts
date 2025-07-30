@@ -7,7 +7,7 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { UserRole, Prisma } from '@prisma/client'; 
-import { cookies } from 'next/headers';
+
 
 export async function getSession(): Promise<Session | null> {
   try {
@@ -15,12 +15,12 @@ export async function getSession(): Promise<Session | null> {
       headers: await headers(),
     }) as Session;
 
-    if (!session.user?.id) {
-      return null;
+    if (!session?.user?.id) {
+      return null; // Si no hay sesión o ID de usuario, devolvemos null
     }
     return session
   } catch (error) {
-    console.error("Error getting session from cookie:", error);
+    console.error("Error getting session:", error);
     return null;
   }
 }
