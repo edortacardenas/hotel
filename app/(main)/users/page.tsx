@@ -1,8 +1,6 @@
 import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
 import type { Session } from '@/lib/type';
-import { auth } from '@/lib/auth';
-import { isAdmin, getAllUsers } from '@/lib/data/user-actions';
+import { isAdmin, getAllUsers, getSession } from '@/lib/data/user-actions';
 import { UserManagementTable } from '@/components/users/UserManagementTable';
 
 const UsersPage = async () => {
@@ -13,8 +11,7 @@ const UsersPage = async () => {
   }
 
   // Obtiene la sesión del admin actual para evitar la auto-modificación en el cliente.
-  const rawSession = await auth.api.getSession({ headers: await headers() });
-  const session = rawSession as Session;
+  const session = await getSession() as Session
   const currentAdminId = session?.user?.id;
 
   if (!currentAdminId) {
