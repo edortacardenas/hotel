@@ -7,13 +7,30 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { UserRole, Prisma } from '@prisma/client'; 
+import { cookies } from 'next/headers';
+
+export async function getSession(): Promise<Session | null> {
+  try {
+    const sessionToken = (await cookies()).get('better-auth.session_token')?.value;
+
+    if (!sessionToken) {
+      return null;
+    }
+
+    const rawSession = await auth.api.getSession({
+      headers: await headers(),
+    }) as Session; // Obtener y castear la sesión directamente);
+    return rawSession as Session;
+  } catch (error) {
+    console.error("Error getting session from cookie:", error);
+    return null;
+  }
+}
 
 export async function isAdmin(): Promise<boolean> {
   
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    }) as Session; // Obtener y castear la sesión directamente
+    const session = await getSession() as Session; // Obtener y castear la sesión directamente
 
     if (!session?.user?.id) {
       console.warn("isAdmin check: No se encontró sesión o ID de usuario.");
